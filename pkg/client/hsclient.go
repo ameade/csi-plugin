@@ -333,7 +333,8 @@ func (client *HammerspaceClient) CreateShare(name string,
     size int64, //size in bytes
     objectives []string,
     exportOptions []common.ShareExportOptions,
-    deleteDelay int64) error {
+    deleteDelay int64,
+    additionalExtendedInfo map[string]string) error {
     log.Debug("Creating share: " + name)
     extendedInfo := map[string]string{
         "csi_created_by_plugin_name":    common.CsiPluginName,
@@ -343,6 +344,10 @@ func (client *HammerspaceClient) CreateShare(name string,
     }
     if deleteDelay >= 0 {
         extendedInfo["csi_delete_delay"] = strconv.Itoa(int(deleteDelay))
+    }
+
+    for k, v := range additionalExtendedInfo{
+        extendedInfo[k] = v
     }
     share := common.ShareRequest{
         Name:          name,

@@ -19,3 +19,5 @@ parameters:
   deleteDelay: "0"
   # The name format of provisioned volumes, %s is replaced with pvc-<uuid>
   volumeNameFormat: "csi-%s"
+  # Comma-separated list of additional metadata to put on volumes
+  additionalVolumeExtendedInfo: "storageClass=hs-storage"

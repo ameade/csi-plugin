@@ -188,7 +188,8 @@ func TestCreateShare(t *testing.T) {
     `, common.Version, common.CsiPluginName, common.Githash, common.CsiVersion)
     err := hsclient.CreateShare("test",
         "/test", -1,
-        []string{}, []common.ShareExportOptions{}, 0)
+        []string{}, []common.ShareExportOptions{}, 0,
+        map[string]string{})
     if err != nil {
         t.Error(err)
     }
@@ -212,7 +213,8 @@ func TestCreateShare(t *testing.T) {
         "/test",
         -1, []string{"test-obj", "test-obj2"},
         []common.ShareExportOptions{},
-        0)
+        0,
+        map[string]string{})
     if err != nil {
         t.Error(err)
     }
@@ -236,7 +238,34 @@ func TestCreateShare(t *testing.T) {
         100,
         []string{},
         []common.ShareExportOptions{},
-        -1)
+        -1,
+        map[string]string{})
+    if err != nil {
+        t.Error(err)
+    }
+    // test additional extended info
+    t.Log("Test Share Extended Info")
+    expectedCreateShareBody = fmt.Sprintf(`
+        {"name":"test",
+         "path":"/test",
+         "extendedInfo":{
+             "csi_created_by_plugin_version": "%s",
+             "csi_created_by_plugin_name": "%s",
+             "csi_created_by_plugin_git_hash": "%s",
+             "csi_created_by_csi_version": "%s",
+             "test_key": "test_value",
+             "test_key_2": "test_value_2"
+         },
+         "shareSizeLimit":100,
+         "exportOptions":[]}
+    `, common.Version, common.CsiPluginName, common.Githash, common.CsiVersion)
+    err = hsclient.CreateShare("test",
+        "/test",
+        100,
+        []string{},
+        []common.ShareExportOptions{},
+        -1,
+        map[string]string{"test_key": "test_value", "test_key_2": "test_value_2"})
     if err != nil {
         t.Error(err)
     }
@@ -284,7 +313,8 @@ func TestCreateShare(t *testing.T) {
         100,
         []string{},
         exportOptions,
-        0)
+        0,
+        map[string]string{})
     if err != nil {
         t.Error(err)
     }
@@ -305,7 +335,8 @@ func TestCreateShare(t *testing.T) {
          "shareSizeLimit":0,
          "exportOptions":[]}
     `, common.Version, common.CsiPluginName, common.Githash, common.CsiVersion)
-    err = hsclient.CreateShare("test", "/test", -1, []string{}, []common.ShareExportOptions{}, 0)
+    err = hsclient.CreateShare("test", "/test", -1, []string{}, []common.ShareExportOptions{}, 0,
+        map[string]string{})
     if err == nil {
         t.Logf("Expected error")
         t.Fail()

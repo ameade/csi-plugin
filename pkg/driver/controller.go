@@ -164,6 +164,7 @@ func (d *CSIDriver) ensureMountVolumeExists(
         hsVolume.Objectives,
         hsVolume.ExportOptions,
         hsVolume.DeleteDelay,
+        map[string]string{}, // TODO
     )
 
     if err != nil {
@@ -191,6 +192,7 @@ func (d *CSIDriver) ensureBlockVolumeExists(
             []string{},
             hsVolume.ExportOptions,
             hsVolume.DeleteDelay,
+            map[string]string{}, // TODO
         )
         if err != nil {
             return status.Errorf(codes.Internal, err.Error())
