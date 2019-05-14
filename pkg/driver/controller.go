@@ -47,18 +47,20 @@ type HSVolumeParameters struct {
     Objectives            []string
     BlockBackingShareName string
     VolumeNameFormat      string
+    AdditionalExtendedInfo   map[string]string
 }
 
 type HSVolume struct {
-    DeleteDelay           int64
-    ExportOptions         []common.ShareExportOptions
-    Objectives            []string
-    BlockBackingShareName string
-    Size                  int64
-    Name                  string
-    Path                  string
-    VolumeMode            string
-    SourceSnapPath        string
+    DeleteDelay              int64
+    ExportOptions            []common.ShareExportOptions
+    Objectives               []string
+    BlockBackingShareName    string
+    Size                     int64
+    Name                     string
+    Path                     string
+    VolumeMode               string
+    SourceSnapPath           string
+    AdditionalExtendedInfo   map[string]string
 }
 
 func parseVolParams(params map[string]string) (HSVolumeParameters, error) {
@@ -114,8 +116,25 @@ func parseVolParams(params map[string]string) (HSVolumeParameters, error) {
                 }
             }
         }
-    }
 
+    }
+    if extendedInfoParam, exists := params["additionalVolumeExtendedInfo"]; exists {
+        vParams.AdditionalExtendedInfo = map[string]string{}
+        if exists {
+            extendedInfoList := strings.Split(extendedInfoParam, ",")
+            for _, m := range extendedInfoList {
+                extendedInfo := strings.Split(m, "=")
+                //assert options is len 2
+                if len(extendedInfo) != 2 {
+                    return vParams, status.Errorf(codes.InvalidArgument, common.InvalidAdditionalVolumeExtendedInfo, m)
+                }
+                key := strings.TrimSpace(extendedInfo[0])
+                value := strings.TrimSpace(extendedInfo[1])
+
+                vParams.AdditionalExtendedInfo[key] = value
+            }
+        }
+    }
     if volumeNameFormat, exists := params["volumeNameFormat"]; exists {
         if strings.Count(volumeNameFormat, "%s") != 1 {
             return vParams, status.Error(codes.InvalidArgument,
@@ -164,7 +183,7 @@ func (d *CSIDriver) ensureMountVolumeExists(
         hsVolume.Objectives,
         hsVolume.ExportOptions,
         hsVolume.DeleteDelay,
-        map[string]string{}, // TODO
+        hsVolume.AdditionalExtendedInfo,
     )
 
     if err != nil {
@@ -192,7 +211,7 @@ func (d *CSIDriver) ensureBlockVolumeExists(
             []string{},
             hsVolume.ExportOptions,
             hsVolume.DeleteDelay,
-            map[string]string{}, // TODO
+            hsVolume.AdditionalExtendedInfo,
         )
         if err != nil {
             return status.Errorf(codes.Internal, err.Error())

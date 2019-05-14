@@ -41,6 +41,9 @@ const (
 
     VolumeDeleteHasSnapshots = "volumes with snapshots cannot be deleted, delete snapshots first"
 
+
+    InvalidAdditionalVolumeExtendedInfo = "Extended Info must be of format key=value, received '%s'"
+
     // Not Found errors
     VolumeNotFound       = "volume does not exist"
     ShareNotFound        = "share does not exist"
