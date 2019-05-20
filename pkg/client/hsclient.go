@@ -336,6 +336,7 @@ func (client *HammerspaceClient) CreateShare(name string,
     deleteDelay int64,
     additionalExtendedInfo map[string]string) error {
     log.Debug("Creating share: " + name)
+    //TODO: refactor this out as we want to set it on both created shares and files
     extendedInfo := map[string]string{
         "csi_created_by_plugin_name":    common.CsiPluginName,
         "csi_created_by_plugin_version": common.Version,

@@ -203,7 +203,9 @@ func (d *CSIDriver) ensureBlockVolumeExists(
     if err != nil {
         return status.Errorf(codes.Internal, err.Error())
     }
+
     if share == nil {
+        hsVolume.AdditionalExtendedInfo["csi_block_backing_share"] = "true"
         err = d.hsclient.CreateShare(
             hsVolume.BlockBackingShareName,
             "/"+hsVolume.BlockBackingShareName,
@@ -280,6 +282,8 @@ func (d *CSIDriver) ensureBlockVolumeExists(
         log.Errorf("failed to set objectives on backing file for volume %v after retrying %d times", err, max_retries)
         return err
     }
+
+    //TODO: set extended info on file
 
     return nil
 }
